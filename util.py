@@ -6,7 +6,7 @@ DEFAULT_CONFIG = {
     "search_keywords": ["Search Query 1", "Search Query 2",
                         "Search Query 3 after:2019"  # We can also use search arguments
                         ],
-    "processedPresentationsUrlsFilePath": "processed_presentations_urls.json",
+    "presentationsCacheFilePath": "processed_presentations_urls.json",
     "downloadDirectory": "presentations/"}
 
 
@@ -21,7 +21,7 @@ def open_json_file_or_create_and_dump_obj(file_path, json_obj):
 
 
 def load_config():
-    return open_json_file_or_create_and_dump_obj("scrape_config.json", DEFAULT_CONFIG)
+    return open_json_file_or_create_and_dump_obj("config.json", DEFAULT_CONFIG)
 
 
 def calculate_length_stats_for_list_of_strings(str_list, list_name=""):

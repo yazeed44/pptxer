@@ -3,6 +3,7 @@ import os
 
 from pptx import Presentation
 
+from presentations_scraper import scrape_presentations_to_dir
 from util import calculate_length_stats_for_list_of_strings, load_config
 
 config = load_config()

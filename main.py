@@ -1,100 +1,68 @@
 import json
 import os
-import re
-import time
 
-from googlesearch import search
 from pptx import Presentation
-import requests
-from fake_headers import Headers
 
-presentations_file_extensions = ["pptx"]
+from util import calculate_length_stats_for_list_of_strings, load_config
 
-processed_presentations_file_name = "processed_presentations_urls.json"
-with open(processed_presentations_file_name) as f:
-    processed_presentations_urls = json.load(f)
-
-search_keywords = ["Augmented Reality", "Virtual Reality", "Oculus VR", "Mixed Reality", "HoloLens",
-                   "Social VR", "Inside-out tracking", "Virtual Reality headset"]
+config = load_config()
 
 
-def scrape_presentation_urls():
-    presentations_urls = []
-    for search_keyword in search_keywords:
-        for file_extension in presentations_file_extensions:
-            search_query = f"{search_keyword} filetype:{file_extension}"
-            print(f"Searching for '{search_query}'")
-            results = search(search_query, num_results=100)
-            new_results = [new_result for new_result in results if
-                           new_result not in presentations_urls and new_result not in processed_presentations_urls]
-            presentations_urls += new_results
-            time.sleep(30)
-
-    return presentations_urls
-
-
-def get_file_name_from_response(response):
-    """
-    Get filename from content-disposition
-    """
-    content_disposition = response.headers.get('content-disposition')
-    if content_disposition:
-        file_name_from_content_disposition = re.findall('filename=(.+)', content_disposition)
-        if len(file_name_from_content_disposition) > 0:
-            return file_name_from_content_disposition[0]
-    return extract_file_name_from_url(response.url)
+# TODO write documentation for functions
+def load_presentations_objects_from_dir(dir_path):
+    presentations = []
+    for root, dirs, files in os.walk(dir_path):
+        for name in files:
+            if name.endswith("pptx"):
+                path = os.path.join(root, name)
+                try:
+                    presentations.append({"path": path, "presentationObj": Presentation(path)})
+                except:
+                    print(f"Unable to process {path} . It is likely to be corrupted or incomplete")
+    return presentations
 
 
-def extract_file_name_from_url(url):
-    url_regex_file_name = re.findall(r"(?=\w+\.\w{3,4}$).+", url)
-    if url_regex_file_name:
-        return url_regex_file_name[0]
+def extract_presentation_text(presentation, is_flattened):
+    # Collect notes
+    slides_notes_texts = [
+        slide.notes_slide.notes_text_frame.text if slide.has_notes_slide and slide.notes_slide.notes_text_frame is not None
+        else "" for slide in presentation["presentationObj"].slides]
+    # Collect text
+    slides_body_texts = ["".join([shape.text if shape.has_text_frame else "" for shape in slide.shapes]) for slide in
+                         presentation["presentationObj"].slides]
+
+    result = {"path": presentation["path"]}
+    if is_flattened:
+        notes_text_flattened = {f"slide{i}NoteText": slides_notes_texts[i] for i in range(len(slides_notes_texts))}
+        body_text_flattened = {f"slide{i}BodyText": slides_body_texts[i] for i in range(len(slides_body_texts))}
+        return {**result,
+                **body_text_flattened,
+                **notes_text_flattened,
+                **calculate_length_stats_for_list_of_strings(slides_body_texts, "BodyText"),
+                **calculate_length_stats_for_list_of_strings(slides_notes_texts, "NotesText"), }
     else:
-        return url
+        return {**result, "slides": [{"noteText": note, "bodyText": body} for note, body in
+                                     zip(slides_notes_texts, slides_body_texts)],
+                "bodyTextLengthStats": calculate_length_stats_for_list_of_strings(slides_body_texts),
+                "noteTextLengthStats": calculate_length_stats_for_list_of_strings(slides_notes_texts)}
 
 
-def get_presentation_urls_from_cached_file():
-    with open("presentations_urls.json") as f:
-        return json.load(f)
+def extract_presentations_texts(dir_path=config["downloadDirectory"], flattened=False,
+                                result_json_file_path=""):
+    presentations = load_presentations_objects_from_dir(dir_path)
+    presentations = [extract_presentation_text(presentation, flattened) for presentation in
+                     presentations]
+    if result_json_file_path != "":
+        with open(result_json_file_path, 'w') as f:
+            json.dump(presentations, f, ensure_ascii=False)
+    return presentations
 
 
-def post_presentation_processing(url):
-    processed_presentations_urls.append(url)
-    with open(processed_presentations_file_name, 'w') as f:
-        json.dump(processed_presentations_urls, f)
-
-
-# TODO remove double quote (test_quote.strip('"'))
-# TODO ensure file name ends with pptx
 def main():
     # presentation_urls = scrape_presentation_urls()
     # presentation_urls = ["https://enable.unc.edu/wp-content/uploads/2019/05/CHIP_XRHealthcare.pptx"]
-    presentation_urls = get_presentation_urls_from_cached_file()
-    presentation_urls = [url for url in presentation_urls if
-                         url.endswith("pptx") and url not in processed_presentations_urls]
-    for url in presentation_urls:
-        try:
 
-            response = requests.get(url, headers=Headers(headers=True).generate())
-            presentation_file_name = get_file_name_from_response(response)
-            print(f"Loaded {presentation_file_name}. Will attempt to process")
-            with open(presentation_file_name, 'wb') as presentation_file:
-                presentation_file.write(response.content)
-
-            presentation = Presentation(presentation_file_name)
-            has_notes = any([slide.has_notes_slide for slide in presentation.slides])
-            if has_notes:
-                print(f"{presentation_file_name} has notes. Storing ...")
-            else:
-                print(
-                    f"{presentation_file_name} has no notes. Attempting to discard\n. Discarding result = {os.remove(presentation_file_name) is None}")
-            post_presentation_processing(response.url)
-        except:
-            print(f"Error with {url}. Skipping")
-            post_presentation_processing(url)
-            continue
-
-    print("Done")
+    print(extract_presentations_texts(result_json_file_path="parsing_presentations_result.json"))
 
 
 if __name__ == '__main__':

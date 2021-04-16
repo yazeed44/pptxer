@@ -11,24 +11,24 @@ from util import calculate_length_stats_for_list_of_strings, load_config
 config = load_config()
 
 
-def extract_presentations_texts(paths, combine_results_of_different_paths=True,
-                                presentation_slide_texts_flattened=False, result_json_file_path=""):
+def extract_presentations_texts(paths, single_array_result=True,
+                                text_fields_flattened=False, result_json_file_path=""):
     if isinstance(paths, str):
-        presentations = __extract_presentation_texts_from_path__(paths, presentation_slide_texts_flattened)
+        presentations = __extract_presentation_texts_from_path__(paths, text_fields_flattened)
     else:
-        presentations = [__extract_presentation_texts_from_path__(path, presentation_slide_texts_flattened) for path in
+        presentations = [__extract_presentation_texts_from_path__(path, text_fields_flattened) for path in
                          paths]
 
-        presentations = sum(presentations, []) if combine_results_of_different_paths else presentations
+        presentations = sum(presentations, []) if single_array_result else presentations
 
-    if result_json_file_path != "":
+    if result_json_file_path is not None:
         with open(result_json_file_path, 'w') as f:
             json.dump(presentations, f, ensure_ascii=False)
 
     return presentations
 
 
-def __extract_presentation_texts_from_path__(path, flattened, ):
+def __extract_presentation_texts_from_path__(path, flattened):
     # If path is to a directory, then navigate that directory and extract text from any pptx file within it
     # If path is to a single file, then extract text from that specific pptx file
     if os.path.isdir(path):

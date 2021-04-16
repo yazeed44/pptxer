@@ -10,7 +10,7 @@ from fake_headers import Headers
 from util import load_config, open_json_file_or_create_and_dump_obj
 
 config = load_config()
-presentations_cache = open_json_file_or_create_and_dump_obj(config["presentationsCacheFilePath"], [])
+presentations_cache = open_json_file_or_create_and_dump_obj(config["presentationsDownloadCacheFilePath"], [])
 
 
 # TODO scrape from slideshare
@@ -18,8 +18,8 @@ presentations_cache = open_json_file_or_create_and_dump_obj(config["presentation
 
 def scrape_presentations_to_dir(search_keywords=config["searchKeywords"],
                                 presentations_dir_path=config["downloadDirectory"],
-                                presentations_cache_file_path=config[
-                                    "presentationsCacheFilePath"]):
+                                presentations_download_cache_file_path=config[
+                                    "presentationsDownloadCacheFilePath"]):
     urls = __scrape_presentation_urls__(search_keywords)
     paths_to_presentations = []
     for url in urls:

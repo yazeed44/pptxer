@@ -6,7 +6,7 @@ DEFAULT_CONFIG = {
     "search_keywords": ["Search Query 1", "Search Query 2",
                         "Search Query 3 after:2019"  # We can also use search arguments
                         ],
-    "presentationsCacheFilePath": "processed_presentations_urls.json",
+    "presentationsDownloadCacheFilePath": "presentation_download_cache.json",
     "downloadDirectory": "presentations/"}
 
 

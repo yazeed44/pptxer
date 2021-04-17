@@ -12,7 +12,7 @@ config = load_config()
 
 
 def extract_presentations_texts(paths, single_array_result=True,
-                                text_fields_flattened=False, result_json_file_path=""):
+                                text_fields_flattened=False, result_json_file_path=None):
     if isinstance(paths, str):
         presentations = __extract_presentation_texts_from_path__(paths, text_fields_flattened)
     else:
@@ -46,6 +46,10 @@ def __load_presentations_objects_from_file_paths__(file_paths):
         file_paths = [file_paths]
     presentations = []
     for path in file_paths:
+        if not os.path.exists(path):
+            # TODO only print errors if verbose
+            print(f"File {path} does not exist. Skipping")
+            continue
         try:
             presentations.append({"path": path, "presentationObj": Presentation(path)})
         except:

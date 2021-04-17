@@ -6,8 +6,7 @@ DEFAULT_CONFIG = {
     "search_keywords": ["Search Query 1", "Search Query 2",
                         "Search Query 3 after:2019"  # We can also use search arguments
                         ],
-    "presentationsDownloadCacheFilePath": "presentation_download_cache.json",
-    "downloadDirectory": "presentations/"}
+    "presentationsDownloadCacheFilePath": "presentation_download_cache.json"}
 
 
 def open_json_file_or_create_and_dump_obj(file_path, json_obj):
@@ -22,6 +21,17 @@ def open_json_file_or_create_and_dump_obj(file_path, json_obj):
 
 def load_config():
     return open_json_file_or_create_and_dump_obj("config.json", DEFAULT_CONFIG)
+
+
+# Ensure all paths within this cache do exists, and if they don't, remove them
+def load_cleaned_up_cache(cache_file_path):
+    if cache_file_path is None:
+        return []
+    raw_cache = open_json_file_or_create_and_dump_obj(cache_file_path, [])
+    cleaned_cache = [cache for cache in raw_cache if os.path.exists(cache["path"])]
+    with open(cache_file_path, 'w') as f:
+        json.dump(cleaned_cache, f)
+    return cleaned_cache
 
 
 def calculate_length_stats_for_list_of_strings(str_list, list_name=""):

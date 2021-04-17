@@ -7,41 +7,57 @@ import requests
 from googlesearch import search
 from fake_headers import Headers
 
-from util import load_config, open_json_file_or_create_and_dump_obj, ensure_path_correctness
+from util import load_config, ensure_path_correctness, load_cleaned_up_cache
 
 config = load_config()
-presentations_cache = open_json_file_or_create_and_dump_obj(config["presentationsDownloadCacheFilePath"], [])
 
+
+# For cache to work correctly, it assumes a few things
+# 1 - the url of the pptx file is not changing
+# 2 - The relative path of the file will not change
+# 3 - Cache file and downloads are within the same directory as python files or below
 
 # TODO scrape from slideshare
 # TODO scrape from Bing
 
 def scrape_presentations_to_dir(search_keywords=config["searchKeywords"],
-                                presentations_dir_path=config["downloadDirectory"],
+                                presentations_download_dir_path="",
                                 presentations_download_cache_file_path=config[
                                     "presentationsDownloadCacheFilePath"]):
-    urls = __scrape_presentation_urls__(search_keywords)
-    paths_to_presentations = []
-    for url in urls:
+    # TODO handle if presentations_download_cache_file_path is None
+    # TODO handle if presentations_dir_path does not exist within os
+    if presentations_download_dir_path is None or len(presentations_download_dir_path) == 0:
+        presentations_download_dir_path = '_'.join(search_keywords)
+    presentations_cache = load_cleaned_up_cache(presentations_download_cache_file_path)
+    raw_pptx_urls = __scrape_presentation_urls__(search_keywords)
+    # Filter pptx that are already downloaded
+    cache_hits = [cache for cache in presentations_cache if cache["url"] in raw_pptx_urls]
+    cache_misses_urls = list(set(raw_pptx_urls) - set([cache["url"] for cache in cache_hits]))
+    print(
+        f"{len(cache_hits)}/{len(raw_pptx_urls)} is already cached. Will attempt to download those that aren't cached")
+    paths_to_presentations = [cache["path"] for cache in cache_hits]
+    for url in cache_misses_urls:
         try:
-            response = requests.get(url, headers=Headers(headers=True).generate())
+            # TODO download files concurrently
+            response = requests.get(url, timeout=10, headers=Headers(headers=True).generate())
         except:
             e = sys.exc_info()[0]
-            print(f"Failed to download {url}. Error is:\n{e}")
+            print(f"Failed to download {url}")  # FIXME if verbose
+            # TODO print error in verbose = error
             continue
-        # TODO deal with duplicate file names overwriting each other
         presentation_file_name = __get_file_name_from_response__(response)
         presentation_file_path = f"{presentations_download_dir_path}/{presentation_file_name}"
         presentation_file_path = ensure_path_correctness(presentation_file_path)
         with open(presentation_file_path, 'wb') as presentation_file:
             presentation_file.write(response.content)
-        print(f"Downloaded {url} to {presentation_file_path}.")
-        __update_presentations_cache__(url, presentation_file_path, presentations_cache_file_path)
+        print(f"Downloaded {url} to {presentation_file_path}.")  # FIXME if verbose
+        __update_presentations_cache__(url, presentation_file_path, presentations_download_cache_file_path,
+                                       presentations_cache)
         paths_to_presentations.append(presentation_file_path)
     return paths_to_presentations
 
 
-def __update_presentations_cache__(url, presentation_file_path, presentations_cache_file_path):
+def __update_presentations_cache__(url, presentation_file_path, presentations_cache_file_path, presentations_cache):
     presentations_cache.append({"path": presentation_file_path, "url": url})
     with open(presentations_cache_file_path, 'w') as f:
         json.dump(presentations_cache, f)
@@ -66,16 +82,13 @@ def __extract_file_name_from_url__(url):
 
 def __scrape_presentation_urls__(search_keywords, sleep_secs=30):
     presentations_urls = []
-    cached_urls = [presentation["url"] for presentation in presentations_cache]
 
     for search_keyword in search_keywords:
         search_query = f"{search_keyword} filetype:pptx"
-        print(f"Searching for '{search_query}'")
+        print(f"Searching for '{search_query}'")  # FIXME if verbose
         results = search(search_query, num_results=100)  # 100 is max
-        new_results = [new_result for new_result in results if
-                       new_result not in presentations_urls and new_result not in cached_urls]
-        presentations_urls += new_results
-        print(f"Will sleep for {sleep_secs} to avoid rate limit")
+        presentations_urls += results
+        print(f"Will sleep for {sleep_secs} seconds to avoid rate limit")  # FIXME if verbose
         time.sleep(sleep_secs)
 
     return presentations_urls

@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 from pptx import Presentation
 
@@ -13,6 +14,8 @@ config = load_config()
 
 def extract_presentations_texts(paths, single_array_result=True,
                                 text_fields_flattened=False, result_json_file_path=None):
+    if result_json_file_path is None:
+        result_json_file_path = f"presentations_text_{time.time()}.json"
     if isinstance(paths, str):
         presentations = __extract_presentation_texts_from_path__(paths, text_fields_flattened)
     else:
@@ -21,9 +24,8 @@ def extract_presentations_texts(paths, single_array_result=True,
 
         presentations = sum(presentations, []) if single_array_result else presentations
 
-    if result_json_file_path is not None:
-        with open(result_json_file_path, 'w') as f:
-            json.dump(presentations, f, ensure_ascii=False)
+    with open(result_json_file_path, 'w') as f:
+        json.dump(presentations, f, ensure_ascii=False)
 
     return presentations
 

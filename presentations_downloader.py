@@ -61,11 +61,7 @@ def __get_file_name_from_response__(response):
 
 
 def __extract_file_name_from_url__(url):
-    url_regex_file_name = re.findall(r"(?=\w+\.\w{3,4}$).+", url)
-    if url_regex_file_name:
-        return url_regex_file_name[0]
-    else:
-        return url
+    return re.findall(r"[^/]*$", url)[0]
 
 
 def __scrape_presentation_urls__(search_keywords, sleep_secs=30):

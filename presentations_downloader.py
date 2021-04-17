@@ -7,7 +7,7 @@ import requests
 from googlesearch import search
 from fake_headers import Headers
 
-from util import load_config, open_json_file_or_create_and_dump_obj
+from util import load_config, open_json_file_or_create_and_dump_obj, ensure_path_correctness
 
 config = load_config()
 presentations_cache = open_json_file_or_create_and_dump_obj(config["presentationsDownloadCacheFilePath"], [])
@@ -31,8 +31,8 @@ def scrape_presentations_to_dir(search_keywords=config["searchKeywords"],
             continue
         # TODO deal with duplicate file names overwriting each other
         presentation_file_name = __get_file_name_from_response__(response)
-        presentation_file_path = f"{presentations_dir_path}/{presentation_file_name}"
-
+        presentation_file_path = f"{presentations_download_dir_path}/{presentation_file_name}"
+        presentation_file_path = ensure_path_correctness(presentation_file_path)
         with open(presentation_file_path, 'wb') as presentation_file:
             presentation_file.write(response.content)
         print(f"Downloaded {url} to {presentation_file_path}.")

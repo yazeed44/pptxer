@@ -35,3 +35,20 @@ def calculate_length_stats_for_list_of_strings(str_list, list_name=""):
                             (max(length_array), "maxLength"), (median(length_array), "medianLength")]
     return {f"{field_name}{list_name}": calculation for calculation, field_name in
             stats_calc_and_names}
+
+
+# If dir does not exist, then create it
+# If there exists a file with same path, then add _1, _2, _i to its file name
+def ensure_path_correctness(path: str):
+    file_directory = os.path.dirname(path)
+    if not os.path.exists(file_directory):
+        os.makedirs(file_directory)
+    # If a file exists with the same name, then add _1, or _2 at the end
+    new_path = path
+    i = 1
+    while os.path.exists(new_path):
+        file_name_without_extension, extension = os.path.splitext(os.path.basename(path))
+        file_name_without_extension += f"_{i}"
+        new_path = os.path.join(file_directory, file_name_without_extension + extension)
+        i += 1
+    return new_path

@@ -1,6 +1,9 @@
 from presentations_text_extractor import extract_presentations_texts
 import argparse
 
+from util import load_config
+
+config = load_config()
 # TODO add verbose
 # TODO add argument for sleep timer for scraping
 arg_parser = argparse.ArgumentParser(
@@ -19,14 +22,18 @@ parser_scraper = subparsers.add_parser('scraper',
 parser_scraper.add_argument('--keywords', default=config["searchKeywords"], nargs='+', help="Keywords to look for")
 parser_scraper.add_argument('--scrape-destination', help="Destination for storing scraped pptx files",
                             type=str)
-parser_scraper.add_argument("--extract-text", help="Extract text after scraping", action="store_true")
-
+parser_scraper.add_argument("--skip-extract-text", help="Download PPTX files off the internet and exit. No extracting texts.", action="store_true")
 for parser in [parser_extract, parser_scraper]:
+    parser.add_argument("--extract-output", help="Output text extractions to file (json)", type=str)
     parser.add_argument("--single-array-result", action="store_false",
                         help="if paths is an array, and this is true then results of extracting texts from different paths will combined into one array. Otherwise, Have 2D lists of each path result")
     parser.add_argument("--text-fields-flattened", action="store_true",
                         help="Flatten all text extractions to be one level")
-    parser.add_argument("--extract-output", help="Output text extractions to file (json)", type=str)
+
+parser_scraper.add_argument("--disable-cache", action="store_true",
+                            help="Download presentations without checking cache to see if they've been downloaded before")
+parser_scraper.add_argument("--cache-file", default=config["presentationsDownloadCacheFilePath"],
+                            help="Specify a cache file to be used. Format is {'path': 'path to pptx file', 'url': 'url to pptx file'}")
 
 args = arg_parser.parse_args()
 if args.subparser_name == 'extractor':

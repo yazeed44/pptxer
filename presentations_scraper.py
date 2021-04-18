@@ -36,7 +36,7 @@ for parser in [parser_extract, parser_scraper]:
 
 parser_scraper.add_argument("--disable-cache", action="store_true",
                             help="Download presentations without checking cache to see if they've been downloaded before")
-parser_scraper.add_argument("--cache-file", default=config["presentationsDownloadCacheFilePath"],
+parser_scraper.add_argument("--cache-file", default=config["cacheFilePath"],
                             help="Specify a cache file to be used. Format is {'path': 'path to pptx file', 'url': 'url to pptx file'}")
 
 args = arg_parser.parse_args()

@@ -4,7 +4,7 @@ from statistics import mean, median
 import logging
 DEFAULT_CONFIG = {
     "search_keywords": [],
-    "presentationsDownloadCacheFilePath": "presentation_download_cache.json"}
+    "cacheFilePath": "presentation_download_cache.json"}
 
 
 def open_json_file_or_create_and_dump_obj(file_path, json_obj):

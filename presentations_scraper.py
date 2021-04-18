@@ -1,3 +1,4 @@
+from presentations_downloader import scrape_presentations_to_dir
 from presentations_text_extractor import extract_presentations_texts
 import argparse
 
@@ -42,3 +43,13 @@ if args.subparser_name == 'extractor':
                                                      args.extract_output)
     if args.extract_output is None:
         print(presentation_texts)
+elif args.subparser_name == "scraper":
+    paths = scrape_presentations_to_dir(args.keywords, args.scrape_destination,
+                                        None if args.disable_cache else args.cache_file)
+    if not args.skip_extract_text:
+        presentation_texts = extract_presentations_texts(paths, args.single_array_result,                                                args.text_fields_flattened,
+                                                         args.extract_output)
+        if args.extract_output is None:
+            print(presentation_texts)
+    else:
+        [print(path) for path in paths]

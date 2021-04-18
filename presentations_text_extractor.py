@@ -1,7 +1,7 @@
 import json
 import os
 import time
-
+import logging
 from pptx import Presentation
 
 from util import calculate_length_stats_for_list_of_strings, load_config
@@ -12,10 +12,12 @@ from util import calculate_length_stats_for_list_of_strings, load_config
 config = load_config()
 
 
+# TODO add a way to sort by field (body text, notes, or both)
 def extract_presentations_texts(paths, single_array_result=True,
                                 text_fields_flattened=False, result_json_file_path=None):
     if result_json_file_path is None:
         result_json_file_path = f"presentations_text_{time.time()}.json"
+        logging.info(f"Since no extract output was specified, the output will be written to => {result_json_file_path}")
     if isinstance(paths, str):
         presentations = __extract_presentation_texts_from_path__(paths, text_fields_flattened)
     else:
@@ -34,6 +36,7 @@ def __extract_presentation_texts_from_path__(path, flattened):
     # If path is to a directory, then navigate that directory and extract text from any pptx file within it
     # If path is to a single file, then extract text from that specific pptx file
     if os.path.isdir(path):
+        logging.debug(f"{path} is to a dir. Will attempt to all pptx files within it")
         presentations = __load_presentations_objects_from_dir__(path)
     else:
         presentations = __load_presentations_objects_from_file_paths__(path)
@@ -49,14 +52,18 @@ def __load_presentations_objects_from_file_paths__(file_paths):
     presentations = []
     for path in file_paths:
         if not os.path.exists(path):
-            # TODO only print errors if verbose
-            print(f"File {path} does not exist. Skipping")
+            logging.error(f"File {path} does not exist")
+            logging.info(f"Will skip {path} due to an error")
             continue
         try:
-            presentations.append({"path": path, "presentationObj": Presentation(path)})
-        except:
-            print(
+            obj = {"path": path, "presentationObj": Presentation(path)}
+
+            presentations.append(obj)
+            logging.debug(f"Loaded {path} successfully")
+        except Exception as e:
+            logging.error(
                 f"Unable to process {path} . It is likely to be corrupted or incomplete. Please ensure that the input is a valid pptx file")
+            logging.info(f"Will skip {path} due to an error")
     return presentations
 
 

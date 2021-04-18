@@ -1,11 +1,9 @@
 import os
 import json
 from statistics import mean, median
-
+import logging
 DEFAULT_CONFIG = {
-    "search_keywords": ["Search Query 1", "Search Query 2",
-                        "Search Query 3 after:2019"  # We can also use search arguments
-                        ],
+    "search_keywords": [],
     "presentationsDownloadCacheFilePath": "presentation_download_cache.json"}
 
 
@@ -14,11 +12,13 @@ def open_json_file_or_create_and_dump_obj(file_path, json_obj):
         with open(file_path) as f:
             return json.load(f)
     else:
+        logging.info(f"{file_path} does not exist. Will create and dump json_obj in")
         with open(file_path, 'w') as f:
-            json.dump(json_obj, f)
+            json.dump(json_obj, f, ensure_ascii=False)
             return json_obj
 
 
+# TODO take config file name as an input
 def load_config():
     return open_json_file_or_create_and_dump_obj("config.json", DEFAULT_CONFIG)
 
@@ -29,8 +29,9 @@ def load_cleaned_up_cache(cache_file_path):
         return []
     raw_cache = open_json_file_or_create_and_dump_obj(cache_file_path, [])
     cleaned_cache = [cache for cache in raw_cache if os.path.exists(cache["path"])]
+    logging.info(f"{len(raw_cache) - len(cleaned_cache)} of the entries in cache are not valid. Will remove them")
     with open(cache_file_path, 'w') as f:
-        json.dump(cleaned_cache, f)
+        json.dump(cleaned_cache, f, ensure_ascii=False)
     return cleaned_cache
 
 
@@ -52,6 +53,7 @@ def calculate_length_stats_for_list_of_strings(str_list, list_name=""):
 def ensure_path_correctness(path: str):
     file_directory = os.path.dirname(path)
     if not os.path.exists(file_directory):
+        logging.info(f"{file_directory} does not exist. Will attempt to create it")
         os.makedirs(file_directory)
     # If a file exists with the same name, then add _1, or _2 at the end
     new_path = path
@@ -60,5 +62,7 @@ def ensure_path_correctness(path: str):
         file_name_without_extension, extension = os.path.splitext(os.path.basename(path))
         file_name_without_extension += f"_{i}"
         new_path = os.path.join(file_directory, file_name_without_extension + extension)
+        logging.debug(f"{path} already exists. Will change file name to be {new_path}")
         i += 1
+    logging.debug(f"{new_path} is valid. Will write to it")
     return new_path

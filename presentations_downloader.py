@@ -1,8 +1,7 @@
 import json
 import re
-import sys
 import time
-
+import logging
 import requests
 from googlesearch import search
 from fake_headers import Headers
@@ -19,7 +18,8 @@ config = load_config()
 
 # TODO scrape from slideshare
 # TODO scrape from Bing
-
+# TODO scrape from Searx (local instance for unlimited rate)
+# TODO Check if keywords are not empty
 def scrape_presentations_to_dir(search_keywords=config["searchKeywords"],
                                 presentations_download_dir_path="",
                                 presentations_download_cache_file_path=config[
@@ -33,24 +33,21 @@ def scrape_presentations_to_dir(search_keywords=config["searchKeywords"],
     # Filter pptx that are already downloaded
     cache_hits = [cache for cache in presentations_cache if cache["url"] in raw_pptx_urls]
     cache_misses_urls = list(set(raw_pptx_urls) - set([cache["url"] for cache in cache_hits]))
-    print(
-        f"{len(cache_hits)}/{len(raw_pptx_urls)} is already cached. Will attempt to download those that aren't cached")
+    logging.info(f"{len(cache_hits)}/{len(raw_pptx_urls)} is already cached. Will attempt to download those that aren't cached")
     paths_to_presentations = [cache["path"] for cache in cache_hits]
     for url in cache_misses_urls:
         try:
             # TODO download files concurrently
             response = requests.get(url, timeout=10, headers=Headers(headers=True).generate())
-        except:
-            e = sys.exc_info()[0]
-            print(f"Failed to download {url}")  # FIXME if verbose
-            # TODO print error in verbose = error
-            continue
+        except Exception as e:
+            logging.warning(e)
+            logging.info(f"Due to an error downloading the file, we will skip downloading {url}")
         presentation_file_name = __get_file_name_from_response__(response)
         presentation_file_path = f"{presentations_download_dir_path}/{presentation_file_name}"
         presentation_file_path = ensure_path_correctness(presentation_file_path)
         with open(presentation_file_path, 'wb') as presentation_file:
             presentation_file.write(response.content)
-        print(f"Downloaded {url} to {presentation_file_path}.")  # FIXME if verbose
+        logging.info(f"Downloaded {url} to {presentation_file_path}")
         __update_presentations_cache__(url, presentation_file_path, presentations_download_cache_file_path,
                                        presentations_cache)
         paths_to_presentations.append(presentation_file_path)
@@ -61,6 +58,7 @@ def __update_presentations_cache__(url, presentation_file_path, presentations_ca
     presentations_cache.append({"path": presentation_file_path, "url": url})
     with open(presentations_cache_file_path, 'w') as f:
         json.dump(presentations_cache, f)
+    logging.debug(f"Updated cache file: {presentations_cache_file_path} to include {presentation_file_path}")
 
 
 # TODO ensure file name ends with pptx
@@ -72,12 +70,16 @@ def __get_file_name_from_response__(response):
     if content_disposition:
         file_name_from_content_disposition = re.findall('filename=(.+)', content_disposition)
         if len(file_name_from_content_disposition) > 0:
-            return file_name_from_content_disposition[0].strip('"')
+            file_name = file_name_from_content_disposition[0].strip('"')
+            logging.debug(f"File name retrieved from content-disposition header: {file_name}")
+            return file_name
     return __extract_file_name_from_url__(response.url).strip('"')
 
 
 def __extract_file_name_from_url__(url):
-    return re.findall(r"[^/]*$", url)[0]
+    file_name = re.findall(r"[^/]*$", url)[0].strip('"')
+    logging.debug(f"File name through regex is {file_name} retrieved URL {url}")
+    return file_name
 
 
 def __scrape_presentation_urls__(search_keywords, sleep_secs=30):
@@ -85,10 +87,10 @@ def __scrape_presentation_urls__(search_keywords, sleep_secs=30):
 
     for search_keyword in search_keywords:
         search_query = f"{search_keyword} filetype:pptx"
-        print(f"Searching for '{search_query}'")  # FIXME if verbose
+        logging.info(f"Searching for '{search_query}'")
         results = search(search_query, num_results=100)  # 100 is max
         presentations_urls += results
-        print(f"Will sleep for {sleep_secs} seconds to avoid rate limit")  # FIXME if verbose
+        logging.info(f"Will sleep for {sleep_secs} seconds to avoid rate limit")
         time.sleep(sleep_secs)
 
     return presentations_urls

@@ -7,6 +7,8 @@ from googlesearch import search
 from fake_headers import Headers
 from typing import List
 
+from requests import Response
+
 from util import load_config, ensure_path_correctness, load_cleaned_up_cache
 
 config = load_config()
@@ -27,12 +29,15 @@ def scrape_presentations_to_dir(search_keywords=config["searchKeywords"],
                                     "cacheFilePath"]) -> List[str]:
     if download_dir_path is None or len(download_dir_path) == 0:
         download_dir_path = '_'.join(search_keywords)
+    logging.info(f"Will start scraping with following params: search_keywords = {search_keywords}, "
+                 f"download_dir_path = {download_dir_path}, cache_file_path = {cache_file_path}")
     cache = load_cleaned_up_cache(cache_file_path)
     raw_pptx_urls = __scrape_presentation_urls__(search_keywords)
     # Filter pptx that are already downloaded
     cache_hits = [cache for cache in cache if cache["url"] in raw_pptx_urls]
     cache_misses_urls = list(set(raw_pptx_urls) - set([cache["url"] for cache in cache_hits]))
-    logging.info(f"{len(cache_hits)}/{len(raw_pptx_urls)} is already cached. Will attempt to download those that aren't cached")
+    logging.info(
+        f"{len(cache_hits)}/{len(raw_pptx_urls)} is already cached. Will attempt to download those that aren't cached")
     paths_to_presentations = [cache["path"] for cache in cache_hits]
     for url in cache_misses_urls:
         try:
@@ -47,12 +52,12 @@ def scrape_presentations_to_dir(search_keywords=config["searchKeywords"],
         with open(presentation_file_path, 'wb') as presentation_file:
             presentation_file.write(response.content)
         logging.info(f"Downloaded {url} to {presentation_file_path}")
-        __update_cache__(url, presentation_file_path, cache_file_path,cache)
+        __update_cache__(url, presentation_file_path, cache_file_path, cache)
         paths_to_presentations.append(presentation_file_path)
     return paths_to_presentations
 
 
-def __update_cache__(url, presentation_file_path, cache_file_path, cache):
+def __update_cache__(url: str, presentation_file_path: str, cache_file_path: str, cache: List[dict]):
     cache.append({"path": presentation_file_path, "url": url})
     with open(cache_file_path, 'w') as f:
         json.dump(cache, f)
@@ -60,7 +65,7 @@ def __update_cache__(url, presentation_file_path, cache_file_path, cache):
 
 
 # TODO ensure file name ends with pptx
-def __get_file_name_from_response__(response):
+def __get_file_name_from_response__(response: Response):
     """
     Get filename from content-disposition
     """
@@ -74,13 +79,13 @@ def __get_file_name_from_response__(response):
     return __extract_file_name_from_url__(response.url).strip('"')
 
 
-def __extract_file_name_from_url__(url):
+def __extract_file_name_from_url__(url: str):
     file_name = re.findall(r"[^/]*$", url)[0].strip('"')
     logging.debug(f"File name through regex is {file_name} retrieved URL {url}")
     return file_name
 
 
-def __scrape_presentation_urls__(search_keywords, sleep_secs=30):
+def __scrape_presentation_urls__(search_keywords: List[str], sleep_secs=30):
     urls = []
 
     for search_keyword in search_keywords:

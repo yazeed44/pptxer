@@ -16,8 +16,8 @@ parser_extract.add_argument("presentation_paths", nargs='+',
 parser_scraper = subparsers.add_parser('scraper',
                                        help="Scrape the internet looking for presentation files (pptx) that contains a specific keywords",
                                        )
-parser_scraper.add_argument('keywords', nargs='+', help="Keywords to look for")
-parser_scraper.add_argument('--scrape-destination', default=".", help="Destination for storing scraped pptx files",
+parser_scraper.add_argument('--keywords', default=config["searchKeywords"], nargs='+', help="Keywords to look for")
+parser_scraper.add_argument('--scrape-destination', help="Destination for storing scraped pptx files",
                             type=str)
 parser_scraper.add_argument("--extract-text", help="Extract text after scraping", action="store_true")
 

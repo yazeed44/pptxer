@@ -86,13 +86,13 @@ def __extract_file_name_from_url__(url: str):
 
 def __scrape_presentation_urls__(search_keywords: List[str], sleep_secs=30):
     urls = []
-
     for search_keyword in search_keywords:
         search_query = f"{search_keyword} filetype:pptx"
         logging.info(f"Searching for '{search_query}'")
         results = search(search_query, num_results=100)  # 100 is max
         urls += results
-        logging.info(f"Will sleep for {sleep_secs} seconds to avoid rate limit")
-        time.sleep(sleep_secs)
+        if search_keyword != search_keywords[-1]:
+            logging.info(f"Will sleep for {sleep_secs} seconds to avoid rate limit")
+            time.sleep(sleep_secs)
 
     return urls

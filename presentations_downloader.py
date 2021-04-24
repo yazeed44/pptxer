@@ -9,9 +9,7 @@ from typing import List
 
 from requests import Response
 
-from util import load_config, ensure_path_correctness, load_cleaned_up_cache
-
-config = load_config()
+from util import ensure_path_correctness, load_cleaned_up_cache
 
 
 # For cache to work correctly, it assumes a few things
@@ -23,10 +21,9 @@ config = load_config()
 # TODO scrape from Bing
 # TODO scrape from Searx (local instance for unlimited rate)
 # TODO Check if keywords are not empty
-def scrape_presentations_to_dir(search_keywords=config["searchKeywords"],
+def scrape_presentations_to_dir(search_keywords,
                                 download_dir_path="",
-                                cache_file_path=config[
-                                    "cacheFilePath"]) -> List[str]:
+                                cache_file_path="cache.json") -> List[str]:
     if download_dir_path is None or len(download_dir_path) == 0:
         download_dir_path = '_'.join(search_keywords)
     logging.info(f"Will start scraping with following params: search_keywords = {search_keywords}, "

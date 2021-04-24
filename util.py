@@ -2,9 +2,6 @@ import os
 import json
 from statistics import mean, median
 import logging
-DEFAULT_CONFIG = {
-    "search_keywords": [],
-    "cacheFilePath": "presentation_download_cache.json"}
 
 
 def open_json_file_or_create_and_dump_obj(file_path, json_obj):
@@ -16,11 +13,6 @@ def open_json_file_or_create_and_dump_obj(file_path, json_obj):
         with open(file_path, 'w') as f:
             json.dump(json_obj, f, ensure_ascii=False)
             return json_obj
-
-
-# TODO take config file name as an input
-def load_config():
-    return open_json_file_or_create_and_dump_obj("config.json", DEFAULT_CONFIG)
 
 
 # Ensure all paths within this cache do exists, and if they don't, remove them

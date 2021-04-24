@@ -5,11 +5,9 @@ import logging
 from pptx import Presentation
 from typing import List
 
-from util import calculate_length_stats_for_list_of_strings, load_config
+from util import calculate_length_stats_for_list_of_strings
 
 # TODO write documentation for functions
-
-config = load_config()
 
 
 # TODO add a way to sort by field (body text, notes, or both)

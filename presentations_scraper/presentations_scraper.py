@@ -12,7 +12,7 @@ arg_parser = argparse.ArgumentParser(
 subparsers = arg_parser.add_subparsers(dest="subparser_name", help="sub-command help")
 
 parser_extract = subparsers.add_parser(
-    "extractor",
+    "extract",
     help="Extract body and note text from pptx files",
 )
 parser_extract.add_argument(
@@ -21,23 +21,23 @@ parser_extract.add_argument(
     help="Paths to pptx files or directories containing pptx files",
 )
 
-parser_scraper = subparsers.add_parser(
-    "scraper",
+parser_download = subparsers.add_parser(
+    "download",
     help="Scrape the internet looking for presentation files (pptx) that "
          "contains a specific keywords",
 )
-parser_scraper.add_argument(
+parser_download.add_argument(
     "keywords", nargs="+", help="Search keywords to look for within pptx files"
 )
-parser_scraper.add_argument(
+parser_download.add_argument(
     "--scrape-destination", help="Destination for storing scraped pptx files", type=str
 )
-parser_scraper.add_argument(
+parser_download.add_argument(
     "--skip-extract-text",
     help="Download PPTX files off the internet and exit. No extracting texts.",
     action="store_true",
 )
-for parser in [parser_extract, parser_scraper]:
+for parser in [parser_extract, parser_download]:
     parser.add_argument(
         "--extract-output", help="Output text extractions to file (json)", type=str
     )
@@ -61,13 +61,13 @@ for parser in [parser_extract, parser_scraper]:
         help="Set the logging level",
     )
 
-parser_scraper.add_argument(
+parser_download.add_argument(
     "--disable-cache",
     action="store_true",
     help="Download presentations without checking cache to see if they've been"
          " downloaded before",
 )
-parser_scraper.add_argument(
+parser_download.add_argument(
     "--cache-file",
     help="Specify a cache file to be used. Format is {'path': 'path to pptx "
          "file', 'url': 'url to pptx file'}",

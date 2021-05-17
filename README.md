@@ -10,7 +10,7 @@ This mode scrapes presentations files that contains a specific keywords from sea
 ### Extractor
 This mode extracts texts from pptx files and outputs a dict with each slide body and note texts. If command line is used then a json file will be outputted.
 
-For example, command ```python presentations_scraper.py extractor test.pptx``` will result
+For example, command ```python presentations_scraper.py extract test.pptx``` will result
 ```
 [{
 'path': 'test.pptx', 

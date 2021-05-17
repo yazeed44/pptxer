@@ -20,7 +20,7 @@ from util import ensure_path_correctness, load_cleaned_up_cache
 
 
 def scrape_presentations_to_dir(
-        search_keywords, download_dir_path="", cache_file_path="cache.json"
+        search_keywords: List[str], download_dir_path="", cache_file_path="cache.json"
 ) -> List[str]:
     if search_keywords is None or len(search_keywords) == 0:
         raise ValueError(f"search keywords must be list of strings with length higher than 0\n"

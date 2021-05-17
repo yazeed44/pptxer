@@ -50,8 +50,8 @@ def extract_presentations_texts(
         )
     logging.info(
         "Will start extracting presentation texts with following parameters:"
-        "paths = %s, single_array_result = %b,"
-        "text_fields_flattened = %b, "
+        "paths = %s, single_array_result = %s,"
+        "text_fields_flattened = %s, "
         "extract_output_file_path = %s", paths, single_array_result, text_fields_flattened, extract_output_file_path
     )
     if isinstance(paths, str):

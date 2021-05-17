@@ -1,18 +1,14 @@
 import json
+import logging
 import os
 import time
-import logging
 from typing import List
-from pptx import Presentation
 
+from pptx import Presentation
 
 from util import calculate_length_stats_for_list_of_strings
 
 
-# TODO write documentation for functions
-
-
-# TODO add a way to sort by field (body text, notes, or both)
 def extract_presentations_texts(
         paths,
         single_array_result=True,
@@ -97,7 +93,6 @@ def __load_presentations_objects_from_dir__(dir_path: str):
     return __load_presentations_objects_from_file_paths__(paths)
 
 
-# TODO add total text field
 def __extract_presentation_text__(presentation: Presentation, is_flattened: bool):
     # Collect notes
     slides_notes_texts = [

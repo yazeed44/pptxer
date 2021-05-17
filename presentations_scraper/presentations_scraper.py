@@ -3,7 +3,6 @@ import logging
 from presentations_downloader import scrape_presentations_to_dir
 from presentations_text_extractor import extract_presentations_texts
 
-# TODO add argument for sleep timer for scraping
 arg_parser = argparse.ArgumentParser(
     description="Extract texts from presentations or scrape presentations "
                 "with specific keywords from the internet"

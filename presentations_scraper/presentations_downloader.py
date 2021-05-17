@@ -22,6 +22,20 @@ from util import ensure_path_correctness, load_cleaned_up_cache
 def scrape_presentations_to_dir(
         search_keywords: List[str], download_dir_path="", cache_file_path="cache.json"
 ) -> List[str]:
+    """
+        Scrape presentations that contain search keywords links off search engines, download them to download_dir_path
+        , and return their paths
+
+                Parameters:
+                        search_keywords (List[str]): A decimal integer
+                        download_dir_path (string): Path to the directory where scrapped pptx files will be stored in
+                        cache_file_path (string): Path to cache file where pptx links and paths will be cached to
+                        minimize downloading as much as possible
+
+                Returns:
+                        presentations_paths (List[str]): A list of paths to downloaded pptx files
+        """
+
     if search_keywords is None or len(search_keywords) == 0:
         raise ValueError(f"search keywords must be list of strings with length higher than 0\n"
                          f"search_keywords={search_keywords}")

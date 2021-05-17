@@ -16,6 +16,32 @@ def extract_presentations_texts(
         text_fields_flattened=False,
         extract_output_file_path=None,
 ) -> List[dict]:
+    """
+        Returns the sum of two decimal numbers in binary digits.
+
+                Parameters:
+                        paths (List[str]): Paths to pptx files
+                        single_array_result (bool): if true then results of extracting texts from different paths
+                        will be combined into one array. Otherwise, Have 2D lists of each path result
+                        text_fields_flattened (bool): Flatten all text extractions to be one level
+                        extract_output_file_path (str): File path to which output (json) will be stored
+
+                Returns:
+                        presentations_texts (List[dict]): A list of dict with following attributes:
+                        {
+                            'path': '$path_to_file',
+                            'slides':
+                            [
+                                {'noteText': $slide_1_note_text, 'bodyText' : $slide_1_body_text}, ...
+                                'bodyTextLengthStats': {'totalLength': $total_length_of_body_texts,
+                                'avgLength': $avg_length_of_body_texts, 'minLength': $min_length_of_body_texts,
+                                'maxLength': $max_length_of_body_texts, 'medianLength': $median_length_of_body_texts},
+                                'noteTextLengthStats': {'totalLength': $total_length_of_note_texts,
+                                'avgLength': $avg_length_of_note_texts, 'minLength': $min_length_of_note_texts,
+                                'maxLength': $max_length_of_note_texts, 'medianLength': $median_length_of_note_texts}
+                            ]
+                        }
+        """
     if extract_output_file_path is None:
         extract_output_file_path = f"presentations_text_{time.time()}.json"
         logging.info(

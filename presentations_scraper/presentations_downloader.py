@@ -27,8 +27,6 @@ def scrape_presentations_to_dir(
                          f"search_keywords={search_keywords}")
     if download_dir_path is None or len(download_dir_path) == 0:
         download_dir_path = "_".join(search_keywords)
-    if cache_file_path is None:
-        cache_file_path = "../cache.json"
     logging.info(
         "Will start scraping with following params: "
         "search_keywords = %s, "

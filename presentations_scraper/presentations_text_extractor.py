@@ -11,7 +11,7 @@ from util import calculate_length_stats_for_list_of_strings
 
 
 def extract_presentations_texts(
-        paths,
+        paths: List[str],
         single_array_result=True,
         text_fields_flattened=False,
         extract_output_file_path=None,

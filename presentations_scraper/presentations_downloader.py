@@ -47,7 +47,6 @@ def scrape_presentations_to_dir(
     paths_to_presentations = [cache["path"] for cache in cache_hits]
     for url in cache_misses_urls:
         try:
-            # TODO download files concurrently
             response = requests.get(
                 url, timeout=10, headers=Headers(headers=True).generate()
             )

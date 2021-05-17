@@ -17,9 +17,7 @@ from util import ensure_path_correctness, load_cleaned_up_cache
 # 2 - The relative path of the file will not change
 # 3 - Cache file and downloads are within the same directory as python files
 
-# TODO scrape from slideshare
-# TODO scrape from Bing
-# TODO scrape from Searx (local instance for unlimited rate)
+
 # TODO Check if keywords are not empty
 def scrape_presentations_to_dir(
         search_keywords, download_dir_path="", cache_file_path="cache.json"

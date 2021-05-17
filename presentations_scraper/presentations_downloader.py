@@ -75,22 +75,24 @@ def __update_cache__(
         "Updated cache file: %s to include %s", cache_file_path, presentation_file_path)
 
 
-# TODO ensure file name ends with pptx
 def __get_file_name_from_response__(response: Response):
     """
     Get filename from content-disposition
     """
     content_disposition = response.headers.get("content-disposition")
     if content_disposition:
-        file_name_from_content_disposition = re.findall(
+        filename = re.findall(
             "filename=(.+)", content_disposition
         )
-        if len(file_name_from_content_disposition) > 0:
-            file_name = file_name_from_content_disposition[0].strip('"')
+        if len(filename) > 0:
+            filename = filename[0].strip('"')
             logging.debug(
-                "File name retrieved from content-disposition header: %s", file_name)
-            return file_name
-    return __extract_file_name_from_url__(response.url).strip('"')
+                "File name retrieved from content-disposition header: %s", filename)
+    else:
+        filename = __extract_file_name_from_url__(response.url).strip('"')
+    if not filename.endswith(".pptx"):
+        filename += ".pptx"
+    return filename
 
 
 def __extract_file_name_from_url__(url: str):

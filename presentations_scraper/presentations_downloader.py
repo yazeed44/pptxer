@@ -1,3 +1,4 @@
+"""This module scrapes presentations files that contains a specific keywords from search engines"""
 import json
 import logging
 import re

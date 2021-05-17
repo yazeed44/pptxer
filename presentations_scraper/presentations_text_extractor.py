@@ -1,3 +1,4 @@
+"""This module extract text from presentation files (pptx)"""
 import json
 import logging
 import os

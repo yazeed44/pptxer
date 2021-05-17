@@ -18,10 +18,12 @@ from util import ensure_path_correctness, load_cleaned_up_cache
 # 3 - Cache file and downloads are within the same directory as python files
 
 
-# TODO Check if keywords are not empty
 def scrape_presentations_to_dir(
         search_keywords, download_dir_path="", cache_file_path="cache.json"
 ) -> List[str]:
+    if search_keywords is None or len(search_keywords) == 0:
+        raise ValueError(f"search keywords must be list of strings with length higher than 0\n"
+                         f"search_keywords={search_keywords}")
     if download_dir_path is None or len(download_dir_path) == 0:
         download_dir_path = "_".join(search_keywords)
     if cache_file_path is None:

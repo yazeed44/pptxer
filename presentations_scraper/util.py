@@ -7,8 +7,8 @@ import logging
 
 def __open_json_file_or_create_and_dump_obj__(file_path, json_obj):
     if os.path.exists(file_path):
-        with open(file_path) as f:
-            return json.load(f)
+        with open(file_path) as json_file:
+            return json.load(json_file)
     else:
         logging.info(
             "%s does not exist. Will create and dump json_obj in", file_path

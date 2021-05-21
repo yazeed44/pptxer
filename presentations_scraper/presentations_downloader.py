@@ -51,9 +51,7 @@ def scrape_presentations_to_dir(
     raw_pptx_urls = __scrape_presentation_urls__(search_keywords)
     # Filter pptx that are already downloaded
     cache_hits = [cache for cache in cache if cache["url"] in raw_pptx_urls]
-    cache_misses_urls = list(
-        set(raw_pptx_urls) - set([cache["url"] for cache in cache_hits])
-    )
+    cache_misses_urls = [url for url in raw_pptx_urls if url not in cache_hits]
     logging.info(
         "%d out of %d is already cached. Will attempt to download those that aren't cached", len(cache_hits),
         len(raw_pptx_urls))

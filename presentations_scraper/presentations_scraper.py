@@ -1,3 +1,4 @@
+"""Command line interface for scraping and extracting text from presentations"""
 import argparse
 import logging
 from presentations_downloader import scrape_presentations_to_dir

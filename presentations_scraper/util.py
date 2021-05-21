@@ -1,3 +1,4 @@
+"""This is a simple utility file for downloading presentation, and extracting text from them"""
 import os
 import json
 from statistics import mean, median

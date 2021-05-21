@@ -7,7 +7,7 @@ from typing import List
 
 from pptx import Presentation
 
-from util import calculate_length_stats_for_list_of_strings
+from util import __calculate_length_stats_for_list_of_strings__
 
 
 def extract_presentations_texts(
@@ -148,8 +148,8 @@ def __extract_presentation_text__(presentation: Presentation, is_flattened: bool
             **result,
             **body_text_flattened,
             **notes_text_flattened,
-            **calculate_length_stats_for_list_of_strings(slides_body_texts, "BodyText"),
-            **calculate_length_stats_for_list_of_strings(
+            **__calculate_length_stats_for_list_of_strings__(slides_body_texts, "BodyText"),
+            **__calculate_length_stats_for_list_of_strings__(
                 slides_notes_texts, "NotesText"
             ),
         }
@@ -160,10 +160,10 @@ def __extract_presentation_text__(presentation: Presentation, is_flattened: bool
             {"noteText": note, "bodyText": body}
             for note, body in zip(slides_notes_texts, slides_body_texts)
         ],
-        "bodyTextLengthStats": calculate_length_stats_for_list_of_strings(
+        "bodyTextLengthStats": __calculate_length_stats_for_list_of_strings__(
             slides_body_texts
         ),
-        "noteTextLengthStats": calculate_length_stats_for_list_of_strings(
+        "noteTextLengthStats": __calculate_length_stats_for_list_of_strings__(
             slides_notes_texts
         ),
     }

@@ -4,7 +4,7 @@ from statistics import mean, median
 import logging
 
 
-def open_json_file_or_create_and_dump_obj(file_path, json_obj):
+def __open_json_file_or_create_and_dump_obj__(file_path, json_obj):
     if os.path.exists(file_path):
         with open(file_path) as f:
             return json.load(f)
@@ -18,10 +18,10 @@ def open_json_file_or_create_and_dump_obj(file_path, json_obj):
 
 
 # Ensure all paths within this cache do exists, and if they don't, remove them
-def load_cleaned_up_cache(cache_file_path):
+def __load_cleaned_up_cache__(cache_file_path):
     if cache_file_path is None:
         return []
-    raw_cache = open_json_file_or_create_and_dump_obj(cache_file_path, [])
+    raw_cache = __open_json_file_or_create_and_dump_obj__(cache_file_path, [])
     cleaned_cache = [cache for cache in raw_cache if os.path.exists(cache["path"])]
     logging.info(
         "%d of the entries in cache are not valid. Will remove them",
@@ -32,7 +32,7 @@ def load_cleaned_up_cache(cache_file_path):
     return cleaned_cache
 
 
-def calculate_length_stats_for_list_of_strings(str_list, list_name=""):
+def __calculate_length_stats_for_list_of_strings__(str_list, list_name=""):
     # If list_name is empty, then we will return generic names such as avg, sum
     # If it is not empty, then we will embed the list_name in each field,
     # such as avgOf{list_name}
@@ -54,7 +54,7 @@ def calculate_length_stats_for_list_of_strings(str_list, list_name=""):
 
 # If dir does not exist, then create it
 # If there exists a file with same path, then add _1, _2, _i to its file name
-def ensure_path_correctness(path: str):
+def __ensure_path_correctness__(path: str):
     file_directory = os.path.dirname(path)
     if not os.path.exists(file_directory):
         logging.info("%s does not exist. Will attempt to create it", file_directory)

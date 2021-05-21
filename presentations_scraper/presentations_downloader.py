@@ -10,7 +10,7 @@ from fake_headers import Headers
 from googlesearch import search
 from requests import Response, RequestException
 
-from util import ensure_path_correctness, load_cleaned_up_cache
+from util import __ensure_path_correctness__, __load_cleaned_up_cache__
 
 
 # For cache to work correctly, it assumes a few things
@@ -47,7 +47,7 @@ def scrape_presentations_to_dir(
         "download_dir_path = %s, "
         "cache_file_path = %s", search_keywords, download_dir_path, cache_file_path
     )
-    cache = load_cleaned_up_cache(cache_file_path)
+    cache = __load_cleaned_up_cache__(cache_file_path)
     raw_pptx_urls = __scrape_presentation_urls__(search_keywords)
     # Filter pptx that are already downloaded
     cache_hits = [cache for cache in cache if cache["url"] in raw_pptx_urls]
@@ -68,7 +68,7 @@ def scrape_presentations_to_dir(
             logging.info("Due to an error downloading the file, we will skip downloading %s", url)
         file_name = __get_file_name_from_response__(response)
         path = f"{download_dir_path}/{file_name}"
-        path = ensure_path_correctness(path)
+        path = __ensure_path_correctness__(path)
         with open(path, "wb") as presentation_file:
             presentation_file.write(response.content)
         logging.info("Downloaded %s to %s", url, path)

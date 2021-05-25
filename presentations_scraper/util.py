@@ -18,21 +18,6 @@ def __open_json_file_or_create_and_dump_obj__(file_path, json_obj):
             return json_obj
 
 
-# Ensure all paths within this cache do exists, and if they don't, remove them
-def __load_cleaned_up_cache__(cache_file_path):
-    if cache_file_path is None:
-        return []
-    raw_cache = __open_json_file_or_create_and_dump_obj__(cache_file_path, [])
-    cleaned_cache = [cache for cache in raw_cache if os.path.exists(cache["path"])]
-    logging.info(
-        "%d of the entries in cache are not valid. Will remove them",
-        len(raw_cache) - len(cleaned_cache)
-    )
-    with open(cache_file_path, "w") as cache_file:
-        json.dump(cleaned_cache, cache_file, ensure_ascii=False)
-    return cleaned_cache
-
-
 def __calculate_length_stats_for_list_of_strings__(str_list, list_name=""):
     # If list_name is empty, then we will return generic names such as avg, sum
     # If it is not empty, then we will embed the list_name in each field,

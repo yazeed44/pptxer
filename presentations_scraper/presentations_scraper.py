@@ -61,18 +61,6 @@ for parser in [parser_extract, parser_download]:
         help="Set the logging level",
     )
 
-parser_download.add_argument(
-    "--disable-cache",
-    action="store_true",
-    help="Download presentations without checking cache to see if they've been"
-         " downloaded before",
-)
-parser_download.add_argument(
-    "--cache-file",
-    help="Specify a cache file to be used. Format is {'path': 'path to pptx "
-         "file', 'url': 'url to pptx file'}",
-)
-
 args = arg_parser.parse_args()
 
 if args.logLevel:
@@ -90,7 +78,6 @@ elif args.subparser_name == "download":
     paths = scrape_presentations_to_dir(
         args.keywords,
         args.scrape_destination,
-        None if args.disable_cache else args.cache_file,
     )
     if not args.skip_extract_text:
         presentation_texts = extract_presentations_texts(

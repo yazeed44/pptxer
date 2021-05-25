@@ -5,7 +5,7 @@ from presentations_downloader import scrape_presentations_to_dir
 from presentations_text_extractor import extract_presentations_texts
 
 arg_parser = argparse.ArgumentParser(
-    description="Extract texts from presentations or scrape presentations "
+    description="Extract texts from presentations or download presentations "
                 "with specific keywords from the internet"
 )
 
@@ -24,13 +24,13 @@ parser_extract.add_argument(
 parser_download = subparsers.add_parser(
     "download",
     help="Scrape the internet looking for presentation files (pptx) that "
-         "contains a specific keywords",
+         "contains a specific keywords and download them",
 )
 parser_download.add_argument(
     "keywords", nargs="+", help="Search keywords to look for within pptx files"
 )
 parser_download.add_argument(
-    "--scrape-destination", help="Destination for storing scraped pptx files", type=str
+    "--download-destination", help="Destination for storing downloaded pptx files", type=str
 )
 parser_download.add_argument(
     "--skip-extract-text",
@@ -77,7 +77,7 @@ if args.subparser_name == "extractor":
 elif args.subparser_name == "download":
     paths = scrape_presentations_to_dir(
         args.keywords,
-        args.scrape_destination,
+        args.download_destination,
     )
     if not args.skip_extract_text:
         presentation_texts = extract_presentations_texts(

@@ -86,7 +86,7 @@ if args.subparser_name == "extractor":
     )
     if args.extract_output is None:
         print(presentation_texts)
-elif args.subparser_name == "scraper":
+elif args.subparser_name == "download":
     paths = scrape_presentations_to_dir(
         args.keywords,
         args.scrape_destination,

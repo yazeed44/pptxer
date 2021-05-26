@@ -1,6 +1,7 @@
 """This module scrapes presentations files that contains a specific keywords from search engines"""
 import json
 import logging
+import os
 import re
 import time
 from typing import List
@@ -48,7 +49,7 @@ def scrape_presentations_to_dir(
             logging.warning(download_error)
             logging.info("Due to an error downloading the file, we will skip downloading %s", url)
         file_name = __get_file_name_from_response__(response)
-        path = f"{download_dir_path}/{file_name}"
+        path = os.path.join(download_dir_path, file_name)
         path = __ensure_path_correctness__(path)
         with open(path, "wb") as presentation_file:
             presentation_file.write(response.content)

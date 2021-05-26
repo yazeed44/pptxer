@@ -36,7 +36,7 @@ def scrape_presentations_to_dir(
     logging.info(
         "Will start scraping with following params: "
         "search_keywords = %s, "
-        "download_dir_path = %s, "
+        "download_dir_path = %s, ", search_keywords, download_dir_path
     )
     raw_pptx_urls = __scrape_presentation_urls__(search_keywords)
     paths_to_presentations = []

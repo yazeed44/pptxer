@@ -30,7 +30,7 @@ parser_download.add_argument(
     "keywords", nargs="+", help="Search keywords to look for within pptx files"
 )
 parser_download.add_argument(
-    "--download-destination", help="Destination for storing downloaded pptx files", type=str
+    "--dst", help="Destination for storing downloaded pptx files", type=str
 )
 parser_download.add_argument(
     "--skip-extract-text",
@@ -77,7 +77,7 @@ if args.subparser_name == "extractor":
 elif args.subparser_name == "download":
     paths = scrape_presentations_to_dir(
         args.keywords,
-        args.download_destination,
+        args.dst,
     )
     if not args.skip_extract_text:
         presentation_texts = extract_presentations_texts(

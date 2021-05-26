@@ -63,7 +63,7 @@ def __get_file_name_from_response__(response: Response):
     Get filename from content-disposition
     """
     content_disposition = response.headers.get("content-disposition")
-    if content_disposition:
+    if content_disposition and "filename" in content_disposition:
         filename = re.findall(
             "filename=(.+)", content_disposition
         )

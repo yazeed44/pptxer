@@ -73,8 +73,10 @@ def __get_file_name_from_response__(response: Response):
                 "File name retrieved from content-disposition header: %s", filename)
     else:
         filename = __extract_file_name_from_url__(response.url).strip('"')
+    filename = filename if len(filename) < 248 else filename[:248]
     if not filename.endswith(".pptx"):
         filename += ".pptx"
+    logging.debug("Final file name: %s", filename)
     return filename
 
 

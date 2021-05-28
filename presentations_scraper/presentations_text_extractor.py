@@ -18,7 +18,7 @@ def extract_presentations_texts(
         extract_output_file_path=None,
 ) -> List[dict]:
     """
-        Returns the sum of two decimal numbers in binary digits.
+    Takes a list of paths to pptx files and returns a list of dictionary with each presentation slides' texts.
 
                 Parameters:
                         paths (List[str]): Paths to pptx files

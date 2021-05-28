@@ -5,7 +5,7 @@ from statistics import mean, median
 import logging
 
 
-def __open_json_file_or_create_and_dump_obj__(file_path, json_obj):
+def __open_json_file_or_create_and_dump_obj__(file_path, json_obj) -> dict:
     if os.path.exists(file_path):
         with open(file_path) as json_file:
             return json.load(json_file)
@@ -16,7 +16,7 @@ def __open_json_file_or_create_and_dump_obj__(file_path, json_obj):
             return json_obj
 
 
-def __calculate_length_stats_for_list_of_strings__(str_list, list_name=""):
+def __calculate_length_stats_for_list_of_strings__(str_list, list_name="") -> dict:
     # If list_name is empty, then we will return generic names such as avg, sum
     # If it is not empty, then we will embed the list_name in each field,
     # such as avgOf{list_name}
@@ -38,7 +38,7 @@ def __calculate_length_stats_for_list_of_strings__(str_list, list_name=""):
 
 # If dir does not exist, then create it
 # If there exists a file with same path, then add _1, _2, _i to its file name
-def __ensure_path_correctness__(path: str):
+def __ensure_path_correctness__(path: str) -> str:
     file_directory = os.path.dirname(path)
     if not os.path.exists(file_directory):
         logging.info("%s does not exist. Will attempt to create it", file_directory)

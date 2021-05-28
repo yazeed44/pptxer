@@ -10,9 +10,7 @@ def __open_json_file_or_create_and_dump_obj__(file_path, json_obj):
         with open(file_path) as json_file:
             return json.load(json_file)
     else:
-        logging.info(
-            "%s does not exist. Will create and dump json_obj in", file_path
-        )
+        logging.info("%s does not exist. Will create and dump json_obj in", file_path)
         with open(file_path, "w") as json_file:
             json.dump(json_obj, json_file, ensure_ascii=False)
             return json_obj

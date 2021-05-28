@@ -6,7 +6,7 @@ from presentations_text_extractor import extract_presentations_texts
 
 arg_parser = argparse.ArgumentParser(
     description="Extract texts from presentations or download presentations "
-                "with specific keywords from the internet"
+    "with specific keywords from the internet"
 )
 
 subparsers = arg_parser.add_subparsers(dest="subparser_name", help="sub-command help")
@@ -24,7 +24,7 @@ parser_extract.add_argument(
 parser_download = subparsers.add_parser(
     "download",
     help="Scrape the internet looking for presentation files (pptx) that "
-         "contains a specific keywords and download them",
+    "contains a specific keywords and download them",
 )
 parser_download.add_argument(
     "keywords", nargs="+", help="Search keywords to look for within pptx files"
@@ -45,8 +45,8 @@ for parser in [parser_extract, parser_download]:
         "--single-array-result",
         action="store_false",
         help="if paths is an array, and this is true then results of "
-             "extracting texts from different paths will combined into one"
-             " array. Otherwise, Have 2D lists of each path result",
+        "extracting texts from different paths will combined into one"
+        " array. Otherwise, Have 2D lists of each path result",
     )
     parser.add_argument(
         "--text-fields-flattened",

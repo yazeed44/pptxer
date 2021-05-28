@@ -1,5 +1,4 @@
 """This module scrapes presentations files that contains a specific keywords from search engines"""
-import json
 import logging
 import os
 import re
@@ -15,28 +14,33 @@ from util import __ensure_path_correctness__
 
 
 def scrape_presentations_to_dir(
-        search_keywords: List[str], download_dir_path="") -> List[str]:
+    search_keywords: List[str], download_dir_path=""
+) -> List[str]:
     """
-        Scrape presentations that contain search keywords links off search engines, download them to download_dir_path
-        , and return their paths
+    Scrape presentations that contain search keywords links off search engines, download them to download_dir_path
+    , and return their paths
 
-                Parameters:
-                        search_keywords (List[str]): A decimal integer
-                        download_dir_path (string): Path to the directory where scrapped pptx files will be stored in
+            Parameters:
+                    search_keywords (List[str]): A decimal integer
+                    download_dir_path (string): Path to the directory where scrapped pptx files will be stored in
 
-                Returns:
-                        presentations_paths (List[str]): A list of paths to downloaded pptx files
-        """
+            Returns:
+                    presentations_paths (List[str]): A list of paths to downloaded pptx files
+    """
 
     if search_keywords is None or len(search_keywords) == 0:
-        raise ValueError(f"search keywords must be list of strings with length higher than 0\n"
-                         f"search_keywords={search_keywords}")
+        raise ValueError(
+            f"search keywords must be list of strings with length higher than 0\n"
+            f"search_keywords={search_keywords}"
+        )
     if download_dir_path is None or len(download_dir_path) == 0:
         download_dir_path = "_".join(search_keywords)
     logging.info(
         "Will start scraping with following params: "
         "search_keywords = %s, "
-        "download_dir_path = %s, ", search_keywords, download_dir_path
+        "download_dir_path = %s, ",
+        search_keywords,
+        download_dir_path,
     )
     raw_pptx_urls = __scrape_presentation_urls__(search_keywords)
     paths_to_presentations = []
@@ -47,7 +51,9 @@ def scrape_presentations_to_dir(
             )
         except RequestException as download_error:
             logging.warning(download_error)
-            logging.info("Due to an error downloading the file, we will skip downloading %s", url)
+            logging.info(
+                "Due to an error downloading the file, we will skip downloading %s", url
+            )
         file_name = __get_file_name_from_response__(response)
         path = os.path.join(download_dir_path, file_name)
         path = __ensure_path_correctness__(path)

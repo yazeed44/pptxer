@@ -1,4 +1,4 @@
-# Presentations Scraper: A fast high-level Presentations Scraper for Python and Command Line
+# PPTXER: A fast high-level Presentations Scraper for Python and Command Line
 
 This project is made to make it as easy as possible to scrape presentations (pptx files) from the internet and extract their text (body and notes). There are two modes:
 - Downloader
@@ -42,3 +42,4 @@ TODO add import module
 ## Issues
 Feel free to open an issue if you have any problems.
 
+# TODO mention rate limit

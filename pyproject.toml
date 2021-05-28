@@ -3,10 +3,10 @@ requires = ["flit_core >=2,<4"]
 build-backend = "flit_core.buildapi"
 
 [tool.flit.metadata]
-module = "presentations_scraper"
+module = "pptxer"
 author = "Yazeed Almuqwishi"
 author-email = "yazeed.almuqwishi@gmail.com"
-home-page = "https://github.com/yazeed44/presentations_scraper"
+home-page = "https://github.com/yazeed44/pptxer"
 description-file = "README.md"
 classifiers = ["License :: OSI Approved :: MIT License", "Programming Language :: Python :: 3", "Environment :: Console"]
 

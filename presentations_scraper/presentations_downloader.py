@@ -64,13 +64,10 @@ def __get_file_name_from_response__(response: Response):
     """
     content_disposition = response.headers.get("content-disposition")
     if content_disposition and "filename" in content_disposition:
-        filename = re.findall(
-            "filename=(.+)", content_disposition
+        filename = re.findall("filename=(.+)", content_disposition)[0]
+        logging.debug(
+            "File name retrieved from content-disposition header: %s", filename
         )
-        if len(filename) > 0:
-            filename = filename[0].strip('"')
-            logging.debug(
-                "File name retrieved from content-disposition header: %s", filename)
     else:
         filename = __extract_file_name_from_url__(response.url).strip('"')
     filename = filename if len(filename) < 248 else filename[:248]

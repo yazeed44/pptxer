@@ -6,6 +6,7 @@ import time
 from typing import List
 
 from pptx import Presentation
+from pptx.exc import PackageNotFoundError
 
 from util import __calculate_length_stats_for_list_of_strings__
 
@@ -102,7 +103,7 @@ def __load_presentations_objects_from_file_paths__(file_paths):
 
             presentations.append(obj)
             logging.debug("Loaded %s successfully", path)
-        except ModuleNotFoundError:
+        except (ModuleNotFoundError, PackageNotFoundError):
             logging.error(
                 "Unable to process %s . It is likely to be corrupted or incomplete. "
                 "Please ensure the input is a valid pptx file", path)

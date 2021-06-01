@@ -36,6 +36,8 @@ This mode extracts texts from pptx files and outputs a dict with each slide body
 - To extract text from presentation files (pptx) or loop through presentation files within a directory
     - Python
     ```python
+    from pptxer.presentations_text_extractor import extract_presentations_texts
+  
     # Single file
   texts = extract_presentations_texts(["directory/test.pptx"])
 

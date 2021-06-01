@@ -1,16 +1,15 @@
-import logging
 import click
 import click_logging
+from pptxer import __version__
+from pptxer import logger
+from pptxer.presentations_downloader import scrape_presentations_to_dir
+from pptxer.presentations_text_extractor import extract_presentations_texts
 
-from presentations_downloader import scrape_presentations_to_dir
-from presentations_text_extractor import extract_presentations_texts
-
-logger = logging.getLogger()
 click_logging.basic_config(logger)
 
 
 @click.group()
-@click.version_option()
+@click.version_option(version=__version__)
 @click.option("--extracted-text-dst", help="Output text extractions to file (json)",
               type=click.Path(file_okay=True, dir_okay=False))
 @click.option("--extracted-text-single-array/--no-extracted-text-single-array", default=True,
@@ -67,5 +66,9 @@ def __extract__(pptx_paths, extracted_text_dst, extracted_text_single_array, fla
         click.echo(f"Extracted texts to {extracted_text_dst}")
 
 
-if __name__ == "__main__":
+def main():
     cli()
+
+
+if __name__ == "__main__":
+    main()

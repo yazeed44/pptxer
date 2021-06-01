@@ -1,6 +1,5 @@
 """This module extract text from presentation files (pptx)"""
 import json
-import logging
 import os
 import time
 from typing import List
@@ -8,14 +7,15 @@ from typing import List
 from pptx import Presentation
 from pptx.exc import PackageNotFoundError
 
-from util import __calculate_length_stats_for_list_of_strings__
+from pptxer.util import __calculate_length_stats_for_list_of_strings__
+from pptxer import logger
 
 
 def extract_presentations_texts(
-    paths: List[str],
-    single_array_result=True,
-    text_fields_flattened=False,
-    extract_output_file_path=None,
+        paths: List[str],
+        single_array_result=True,
+        text_fields_flattened=False,
+        extract_output_file_path=None,
 ) -> List[dict]:
     """
     Takes a list of paths to pptx files and returns a list of dictionary with each presentation slides' texts.
@@ -45,12 +45,12 @@ def extract_presentations_texts(
     """
     if extract_output_file_path is None:
         extract_output_file_path = f"presentations_text_{time.time()}.json"
-        logging.info(
+        logger.info(
             "Since no extract output was specified, the output will be "
             "written to => %s",
             extract_output_file_path,
         )
-    logging.info(
+    logger.info(
         "Will start extracting presentation texts with following parameters:"
         "paths = %s, single_array_result = %s,"
         "text_fields_flattened = %s, "
@@ -80,7 +80,7 @@ def extract_presentations_texts(
 
 def __extract_presentation_texts_from_path__(path: str, flattened: bool):
     if os.path.isdir(path):
-        logging.debug("%s is to a dir. Will attempt to all pptx files within it", path)
+        logger.debug("%s is to a dir. Will attempt to all pptx files within it", path)
         presentations = __load_presentations_objects_from_dir__(path)
     else:
         presentations = __load_presentations_objects_from_file_paths__(path)
@@ -98,21 +98,21 @@ def __load_presentations_objects_from_file_paths__(file_paths):
     presentations = []
     for path in file_paths:
         if not os.path.exists(path):
-            logging.error("File %s does not exist", path)
-            logging.info("Will skip %s due to an error", path)
+            logger.error("File %s does not exist", path)
+            logger.info("Will skip %s due to an error", path)
             continue
         try:
             obj = {"path": path, "presentationObj": Presentation(path)}
 
             presentations.append(obj)
-            logging.debug("Loaded %s successfully", path)
+            logger.debug("Loaded %s successfully", path)
         except (ModuleNotFoundError, PackageNotFoundError):
-            logging.error(
+            logger.error(
                 "Unable to process %s . It is likely to be corrupted or incomplete. "
                 "Please ensure the input is a valid pptx file",
                 path,
             )
-            logging.info("Will skip %s due to an error", path)
+            logger.info("Will skip %s due to an error", path)
     return presentations
 
 

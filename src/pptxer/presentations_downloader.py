@@ -1,5 +1,4 @@
 """This module scrapes presentations files that contains a specific keywords from search engines"""
-import logging
 import os
 import re
 import time
@@ -10,11 +9,12 @@ from fake_headers import Headers
 from googlesearch import search
 from requests import Response, RequestException
 
-from util import __ensure_path_correctness__
+from pptxer.util import __ensure_path_correctness__
+from pptxer import logger
 
 
 def scrape_presentations_to_dir(
-    search_keywords: List[str], download_dir_path=""
+        search_keywords: List[str], download_dir_path=""
 ) -> List[str]:
     """
     Scrape presentations that contain search keywords links off search engines, download them to download_dir_path
@@ -35,7 +35,7 @@ def scrape_presentations_to_dir(
         )
     if download_dir_path is None or len(download_dir_path) == 0:
         download_dir_path = "_".join(search_keywords)
-    logging.info(
+    logger.info(
         "Will start scraping with following params: "
         "search_keywords = %s, "
         "download_dir_path = %s, ",
@@ -50,8 +50,8 @@ def scrape_presentations_to_dir(
                 url, timeout=10, headers=Headers(headers=True).generate()
             )
         except RequestException as download_error:
-            logging.warning(download_error)
-            logging.info(
+            logger.warning(download_error)
+            logger.info(
                 "Due to an error downloading the file, we will skip downloading %s", url
             )
         file_name = __get_file_name_from_response__(response)
@@ -59,7 +59,7 @@ def scrape_presentations_to_dir(
         path = __ensure_path_correctness__(path)
         with open(path, "wb") as presentation_file:
             presentation_file.write(response.content)
-        logging.info("Downloaded %s to %s", url, path)
+        logger.info("Downloaded %s to %s", url, path)
         paths_to_presentations.append(path)
     return paths_to_presentations
 
@@ -71,7 +71,7 @@ def __get_file_name_from_response__(response: Response):
     content_disposition = response.headers.get("content-disposition")
     if content_disposition and "filename" in content_disposition:
         filename = re.findall("filename=(.+)", content_disposition)[0]
-        logging.debug(
+        logger.debug(
             "File name retrieved from content-disposition header: %s", filename
         )
     else:
@@ -79,13 +79,13 @@ def __get_file_name_from_response__(response: Response):
     filename = filename if len(filename) < 248 else filename[:248]
     if not filename.endswith(".pptx"):
         filename += ".pptx"
-    logging.debug("Final file name: %s", filename)
+    logger.debug("Final file name: %s", filename)
     return filename
 
 
 def __extract_file_name_from_url__(url: str):
     file_name = re.findall(r"[^/]*$", url)[0].strip('"')
-    logging.debug("File name through regex is %s retrieved URL %s", file_name, url)
+    logger.debug("File name through regex is %s retrieved URL %s", file_name, url)
     return file_name
 
 
@@ -93,11 +93,11 @@ def __scrape_presentation_urls__(search_keywords: List[str], sleep_secs=30):
     urls = []
     for search_keyword in search_keywords:
         search_query = f"{search_keyword} filetype:pptx"
-        logging.info("Searching for '%s'", search_query)
+        logger.info("Searching for '%s'", search_query)
         results = search(search_query, num_results=100)  # 100 is max
         urls += results
         if search_keyword != search_keywords[-1]:
-            logging.info("Will sleep for %d seconds to avoid rate limit", sleep_secs)
+            logger.info("Will sleep for %d seconds to avoid rate limit", sleep_secs)
             time.sleep(sleep_secs)
 
     return urls

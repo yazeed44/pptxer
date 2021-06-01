@@ -1,4 +1,4 @@
-# 0.1.0 (2021-04-25)
+# 0.1.0 (2021-06-1)
 First version. The following functionalities are implemented
 - Scrapping pptx files off Google
 - Extract the text within pptx files

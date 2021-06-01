@@ -1,11 +1,9 @@
+import logging
+
 import click
-import click_logging
 from pptxer import __version__
-from pptxer import logger
 from pptxer.presentations_downloader import scrape_presentations_to_dir
 from pptxer.presentations_text_extractor import extract_presentations_texts
-
-click_logging.basic_config(logger)
 
 
 @click.group()
@@ -18,14 +16,17 @@ click_logging.basic_config(logger)
                    " array. Otherwise, Have 2D lists of each path result""")
 @click.option("--flatten-extracted-text/--no-flatten-extracted-text", default=False,
               help="Flatten all text extractions to be one level")
-@click_logging.simple_verbosity_option(logger)
+@click.option("--verbosity", "--v",
+              type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], case_sensitive=False))
 @click.pass_context
-def cli(ctx, extracted_text_dst, extracted_text_single_array, flatten_extracted_text):
+def cli(ctx, extracted_text_dst, extracted_text_single_array, flatten_extracted_text, verbosity):
     ctx.ensure_object(dict)
     ctx.obj["extracted_text_dst"] = extracted_text_dst
     ctx.obj["extracted_text_single_array"] = extracted_text_single_array
     ctx.obj["flatten_extracted_text"] = flatten_extracted_text
 
+    if verbosity:
+        logging.basicConfig(level=getattr(logging, verbosity.upper(), "NOTSET"))
     pass
 
 

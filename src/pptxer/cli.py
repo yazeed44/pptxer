@@ -16,7 +16,7 @@ from pptxer.presentations_text_extractor import extract_presentations_texts
                    " array. Otherwise, Have 2D lists of each path result""")
 @click.option("--flatten-extracted-text/--no-flatten-extracted-text", default=False,
               help="Flatten all text extractions to be one level")
-@click.option("--verbosity", "--v",
+@click.option("--verbosity", "-v",
               type=click.Choice(["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], case_sensitive=False))
 @click.pass_context
 def cli(ctx, extracted_text_dst, extracted_text_single_array, flatten_extracted_text, verbosity):
